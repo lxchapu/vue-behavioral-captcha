@@ -17,13 +17,11 @@
     "prettier": "prettier --write ."
   },
   "dependencies": {
-    "lodash-es": "^4.17.21",
     "vue": "^3.2.45"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",
     "@types/jsdom": "^20.0.1",
-    "@types/lodash-es": "^4.17.6",
     "@types/node": "^18.11.12",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vitejs/plugin-vue-jsx": "^3.0.0",

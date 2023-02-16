@@ -1,18 +1,19 @@
 <!--
  * @Author: 杨旭
- * @Date: 2023-02-09 16:31:40
+ * @Date: 2023-02-15 17:11:07
  * @LastEditors: 杨旭
- * @LastEditTime: 2023-02-10 16:53:16
+ * @LastEditTime: 2023-02-16 18:43:40
  * @FilePath: \vue-slide-puzzle\src\App.vue
  * @Description: 
 -->
 <script lang="ts" setup>
-import SlidePuzzle from './components/slide-puzzle/SlidePuzzle.vue'
-import Box from './components/Box.vue'
+import PuzzleSlider from './components/puzzle-slider/PuzzleSlider.vue'
+
+function handleSuccess() {
+  console.log('success')
+}
 </script>
 
 <template>
-  <SlidePuzzle />
-
-  <Box />
+  <PuzzleSlider @success="handleSuccess" />
 </template>
