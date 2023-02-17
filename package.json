@@ -1,19 +1,32 @@
 {
-  "name": "vue-puzzle-slider",
-  "version": "1.0.0",
-  "private": true,
+  "name": "vue-behavioral-captcha",
+  "version": "0.1.0",
+  "description": "基于 Vue 3 的行为式验证码",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lxchapu/vue-behavioral-captcha.git"
+  },
+  "keywords": [
+    "vue-behavioral-captcha",
+    "behavioral-captcha",
+    "puzzle",
+    "vue3"
+  ],
+  "license": "MIT",
   "packageManager": "^pnpm@7.26.3",
   "engines": {
     "node": ">=16"
   },
   "type": "module",
-  "files": ["dist"],
-  "main": "./dist/vue-puzzle-slider.umd.cjs",
-  "module": "./dist/vue-puzzle-slider.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/vue-behavioral-captcha.umd.cjs",
+  "module": "./dist/vue-behavioral-captcha.js",
   "exports": {
     ".": {
-      "import": "./dist/vue-puzzle-slider.js",
-      "require": "./dist/vue-puzzle-slider.umd.cjs"
+      "import": "./dist/vue-behavioral-captcha.js",
+      "require": "./dist/vue-behavioral-captcha.umd.cjs"
     }
   },
   "scripts": {

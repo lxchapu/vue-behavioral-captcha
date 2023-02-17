@@ -1,11 +1,3 @@
-/*
- * @Author: 杨旭
- * @Date: 2023-02-09 16:31:39
- * @LastEditors: 杨旭
- * @LastEditTime: 2023-02-09 16:52:00
- * @FilePath: \vue-slide-puzzle\vite.config.ts
- * @Description:
- */
 /// <reference types="vitest" />
 
 import { fileURLToPath, URL } from 'node:url'
@@ -32,8 +24,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/components/index.ts'),
-      name: 'VuePuzzleSlider',
-      fileName: 'vue-puzzle-slider',
+      name: 'VueBehavioralCaptcha',
+      fileName: 'vue-behavioral-captcha',
     },
     rollupOptions: {
       external: ['vue'],
