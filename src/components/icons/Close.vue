@@ -1,11 +1,3 @@
-<!--
- * @Author: 杨旭
- * @Date: 2023-02-15 13:16:50
- * @LastEditors: 杨旭
- * @LastEditTime: 2023-02-16 10:45:31
- * @FilePath: \vue-slide-puzzle\src\components\icons\Close.vue
- * @Description: 
--->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"

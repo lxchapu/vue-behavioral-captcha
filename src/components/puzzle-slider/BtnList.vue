@@ -1,11 +1,3 @@
-<!--
- * @Author: 杨旭
- * @Date: 2023-02-16 15:29:39
- * @LastEditors: 杨旭
- * @LastEditTime: 2023-02-17 09:19:24
- * @FilePath: \vue-slide-puzzle\src\components\puzzle-slider\BtnList.vue
- * @Description: 按钮列表
--->
 <script lang="ts" setup>
 import IconReload from '../icons/Reload.vue'
 

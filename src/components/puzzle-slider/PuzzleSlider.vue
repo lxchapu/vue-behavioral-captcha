@@ -1,11 +1,3 @@
-<!--
- * @Author: 杨旭
- * @Date: 2023-02-16 13:21:30
- * @LastEditors: 杨旭
- * @LastEditTime: 2023-02-17 10:31:45
- * @FilePath: \vue-slide-puzzle\src\components\puzzle-slider\PuzzleSlider.vue
- * @Description: 拼图滑动验证
--->
 <script lang="ts" setup>
 import Loading from './Loading.vue'
 import BtnList from './BtnList.vue'

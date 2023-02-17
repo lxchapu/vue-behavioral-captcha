@@ -1,11 +1,3 @@
-/*
- * @Author: 杨旭
- * @Date: 2023-02-16 14:11:15
- * @LastEditors: 杨旭
- * @LastEditTime: 2023-02-16 14:28:16
- * @FilePath: \vue-slide-puzzle\src\components\puzzle-slider\utils.ts
- * @Description: 工具函数
- */
 /** 加载图片 */
 export function loadImg(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
