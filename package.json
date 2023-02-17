@@ -1,10 +1,20 @@
 {
-  "name": "vue-slide-puzzle",
+  "name": "vue-puzzle-slider",
   "version": "1.0.0",
   "private": true,
   "packageManager": "^pnpm@7.26.3",
   "engines": {
     "node": ">=16"
+  },
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/vue-puzzle-slider.umd.cjs",
+  "module": "./dist/vue-puzzle-slider.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-puzzle-slider.js",
+      "require": "./dist/vue-puzzle-slider.umd.cjs"
+    }
   },
   "scripts": {
     "dev": "vite",
