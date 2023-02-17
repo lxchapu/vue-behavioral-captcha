@@ -2,19 +2,25 @@
  * @Author: 杨旭
  * @Date: 2023-02-16 15:29:39
  * @LastEditors: 杨旭
- * @LastEditTime: 2023-02-16 15:32:04
+ * @LastEditTime: 2023-02-17 09:19:24
  * @FilePath: \vue-slide-puzzle\src\components\puzzle-slider\BtnList.vue
  * @Description: 按钮列表
 -->
 <script lang="ts" setup>
 import IconReload from '../icons/Reload.vue'
 
+defineProps({
+  showRefresh: {
+    type: Boolean,
+    default: true,
+  },
+})
 defineEmits(['refresh'])
 </script>
 
 <template>
   <div class="btn-list">
-    <button class="btn" type="button" title="刷新" @click="$emit('refresh')">
+    <button v-if="showRefresh" class="btn" type="button" title="刷新" @click="$emit('refresh')">
       <IconReload class="btn_icon" />
     </button>
   </div>

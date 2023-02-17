@@ -2,7 +2,7 @@
  * @Author: 杨旭
  * @Date: 2023-02-16 13:21:30
  * @LastEditors: 杨旭
- * @LastEditTime: 2023-02-16 18:51:56
+ * @LastEditTime: 2023-02-17 10:31:45
  * @FilePath: \vue-slide-puzzle\src\components\puzzle-slider\PuzzleSlider.vue
  * @Description: 拼图滑动验证
 -->
@@ -11,6 +11,7 @@ import Loading from './Loading.vue'
 import BtnList from './BtnList.vue'
 import IconArrowRight from '../icons/ArrowRight.vue'
 import IconClose from '../icons/Close.vue'
+import IconCheck from '../icons/Check.vue'
 
 import type { PropType } from 'vue'
 import type { BlockType } from './types'
@@ -88,6 +89,12 @@ async function initPuzzle() {
   !fullCtx && (fullCtx = fullCanvasRef.value!.getContext('2d'))
   !bgCtx && (bgCtx = bgCanvasRef.value!.getContext('2d'))
   !blockCtx && (blockCtx = blockCanvasRef.value!.getContext('2d'))
+
+  blockLeft.value = 0
+  slideLeft.value = 0
+  startPosition.clientX = 0
+  startPosition.left = 0
+  maxError.value = false
 
   clearCanvas()
 
@@ -283,6 +290,8 @@ function handleDrag(event: MouseEvent) {
 
 const succeed = ref(false)
 const failed = ref(false)
+const animate = ref(false)
+const maxError = ref(false)
 /** 结束拖动 */
 function handleStopDrag() {
   if (!dragging.value) return
@@ -290,15 +299,60 @@ function handleStopDrag() {
 
   if (Math.abs(answer - blockLeft.value) < props.range) {
     emits('success')
+    errorTimes = 0
     succeed.value = true
   } else {
     emits('error')
-    failed.value = true
+    errorTimes += 1
+    if (errorTimes >= maxErrorTimes) {
+      maxError.value = true
+    } else {
+      failed.value = true
+
+      setTimeout(() => {
+        animate.value = true
+        failed.value = false
+        initPuzzle()
+      }, 100)
+
+      setTimeout(() => {
+        animate.value = false
+      }, 400)
+    }
   }
 }
 useEvent('mousemove', handleDrag)
 useEvent('mouseup', handleStopDrag)
 useEvent('blur', handleStopDrag)
+/** 滑块图标 */
+const sliderIcon = computed(() => {
+  if (succeed.value) {
+    return IconCheck
+  }
+  if (failed.value) {
+    return IconClose
+  }
+  return IconArrowRight
+})
+/** 滑动提示信息 */
+const sliderTipText = computed(() => {
+  if (succeed.value || failed.value) {
+    return ''
+  }
+  if (maxError.value) {
+    return props.maxErrorText
+  }
+  return props.tipText
+})
+
+const maxErrorTimes = 5
+let errorTimes = 0
+
+function handleClickRetry() {
+  if (maxError.value) {
+    initPuzzle()
+  }
+}
 </script>
 
 <template>
@@ -329,7 +383,15 @@ useEvent('blur', handleStopDrag)
           }"
         ></canvas>
         <!-- 完整的图片 -->
-        <canvas ref="fullCanvasRef" class="img-full" :width="width" :height="height"></canvas>
+        <canvas
+          ref="fullCanvasRef"
+          class="img-full"
+          :width="width"
+          :height="height"
+          :style="{
+            opacity: succeed ? '1' : '',
+          }"
+        ></canvas>
       </div>
 
       <div v-show="loading" class="load-container">
@@ -337,24 +399,29 @@ useEvent('blur', handleStopDrag)
       </div>
 
       <div class="top-container">
-        <BtnList @refresh="refreshImg" />
+        <BtnList :show-refresh="!succeed" @refresh="refreshImg" />
       </div>
     </div>
 
     <div class="puzzle-control">
       <div
         class="slider"
+        :class="{ 'slider--error': maxError }"
         :style="{
           height: `${sliderSize}px`,
           borderRadius: `${borderRadius}px`,
         }"
+        @click="handleClickRetry"
       >
         <div
+          v-show="!maxError"
           class="slider-bar"
           :class="{
             'slider-bar--dragging': dragging,
+            'slider-bar--waiting': !succeed && !failed,
             'slider-bar--succeed': succeed,
             'slider-bar--failed': failed,
+            'slider-bar--animate': animate,
           }"
           :style="{
             width: `${sliderSize + slideLeft}px`,
@@ -370,18 +437,18 @@ useEvent('blur', handleStopDrag)
             }"
             @mousedown="handleStartDrag"
           >
-            <component :is="IconArrowRight" />
+            <component :is="sliderIcon" />
           </div>
         </div>
         <div
           v-show="!dragging"
           class="slider-tip"
           :style="{
-            paddingLeft: `${sliderSize - 1}px`,
+            paddingLeft: `${maxError ? 0 : sliderSize - 1}px`,
           }"
         >
-          <IconClose v-if="false" class="slider-tip_icon" />
-          <span class="slider-tip_text">{{ tipText }}</span>
+          <IconClose v-if="maxError" class="slider-tip_icon" />
+          <span class="slider-tip_text">{{ sliderTipText }}</span>
         </div>
       </div>
     </div>
@@ -440,9 +507,17 @@ useEvent('blur', handleStopDrag)
 
 .slider {
   position: relative;
+  color: #45494c;
   border: 1px solid #e4e7eb;
   background-color: #f7f9fa;
   box-sizing: border-box;
+}
+
+.slider--error {
+  border-color: #f57a7a;
+  background-color: #fce1e1;
+  color: #f57a7a;
+  cursor: pointer;
 }
 
 .slider-bar {
@@ -482,6 +557,17 @@ useEvent('blur', handleStopDrag)
   }
 }
 
+.slider-bar--animate {
+  transition: width 0.3s ease-out;
+}
+
+.slider-bar--waiting {
+  .slider-btn:hover {
+    color: #fff;
+    background-color: #1991fa;
+  }
+}
+
 .slider-btn {
   position: absolute;
   right: 0;
@@ -497,25 +583,18 @@ useEvent('blur', handleStopDrag)
   display: flex;
   align-items: center;
   justify-content: center;
-
-  &:hover {
-    color: #fff;
-    background-color: #1991fa;
-  }
 }
 
 .slider-tip {
   height: 100%;
 
-  color: #45494c;
   display: flex;
   align-items: center;
+
+  justify-content: center;
 }
 
 .slider-tip_text {
-  flex-grow: 1;
-  text-align: center;
-
   line-height: 18px;
   user-select: none;
 }
