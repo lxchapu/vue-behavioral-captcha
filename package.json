@@ -27,7 +27,8 @@
     ".": {
       "import": "./dist/vue-behavioral-captcha.js",
       "require": "./dist/vue-behavioral-captcha.umd.cjs"
-    }
+    },
+    "./*": "./*"
   },
   "scripts": {
     "dev": "vite",
