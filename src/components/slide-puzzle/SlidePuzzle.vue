@@ -286,6 +286,17 @@ async function finish() {
     }
   }
 }
+
+const btnGroup = computed(() => {
+  return [
+    {
+      title: '刷新',
+      visible: sliderState.value !== 'pass',
+      disabled: loading.value,
+      event: refreshImg,
+    },
+  ]
+})
 </script>
 
 <template>
@@ -333,7 +344,7 @@ async function finish() {
       </div>
 
       <div class="top-container">
-        <BtnList :show-refresh="sliderState !== 'pass'" @refresh="refreshImg" />
+        <BtnList :data="btnGroup" />
       </div>
     </div>
 
