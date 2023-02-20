@@ -1,16 +1,14 @@
 <script lang="ts" setup>
 import Loading from './Loading.vue'
 import BtnList from './BtnList.vue'
-import IconArrowRight from '../icons/ArrowRight.vue'
-import IconClose from '../icons/Close.vue'
-import IconCheck from '../icons/Check.vue'
+import Slider from './Slider.vue'
+import Error from './Error.vue'
 
 import type { PropType } from 'vue'
-import type { BlockType } from './types'
+import type { BlockType, SliderState } from './types'
 
 import { ref, computed, onMounted } from 'vue'
-import { clamp, loadImg, random } from './utils'
-import { useEvent } from './useEvent'
+import { loadImg, random } from './utils'
 
 const props = defineProps({
   /** 画布宽度 */
@@ -33,9 +31,10 @@ const props = defineProps({
   },
   tipText: { type: String, default: '向右拖动滑块填充拼图' },
   maxErrorText: { type: String, default: '失败过多，点击重试' },
+  loadingText: { type: String, default: '加载中...' },
 })
 
-const emits = defineEmits(['success', 'error'])
+const emits = defineEmits(['success', 'fail'])
 
 /** 安全距离 */
 const safePadding = 4
@@ -76,6 +75,8 @@ let fullCtx: CanvasRenderingContext2D | null = null,
 
 let answer = 0
 
+const errorText = ref('')
+
 /** 初始化拼图 */
 async function initPuzzle() {
   !fullCtx && (fullCtx = fullCanvasRef.value!.getContext('2d'))
@@ -83,10 +84,6 @@ async function initPuzzle() {
   !blockCtx && (blockCtx = blockCanvasRef.value!.getContext('2d'))
 
   blockLeft.value = 0
-  slideLeft.value = 0
-  startPosition.clientX = 0
-  startPosition.left = 0
-  maxError.value = false
 
   clearCanvas()
 
@@ -101,11 +98,14 @@ async function initPuzzle() {
   answer = randomX - blockPadding
 
   loading.value = true
+  errorText.value = ''
   try {
     const img = await loadImg(imgUrl)
     drawFullImg(img)
     drawBg(bgCtx!, img, randomX, randomY)
     drawBlock(blockCtx!, img, randomX, randomY)
+  } catch (error: any) {
+    errorText.value = error
   } finally {
     loading.value = false
   }
@@ -206,12 +206,13 @@ function drawBlock(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: numb
   ctx.fill()
   ctx.restore()
 }
-/** 图片加载中 */
 const loading = ref(false)
 
 /** 刷新图片 */
-function refreshImg() {
-  initPuzzle()
+async function refreshImg() {
+  await initPuzzle()
+  maxError.value = false
+  sliderState.value = 'ready'
 }
 
 /** 绘制拼图路径 */
@@ -249,100 +250,29 @@ onMounted(() => {
   initPuzzle()
 })
 const blockLeft = ref(0)
-/** 滑块位置 */
-const slideLeft = ref(0)
-/* 拖拽中 */
-const dragging = ref(false)
-/* 记录开始坐标 */
-const startPosition = {
-  /* 鼠标点击的开始位置 */
-  clientX: 0,
-  /* 滑块的开始位置 */
-  left: 0,
-}
+const sliderMax = computed(() => props.width - blockRealSize.value)
+const sliderState = ref<SliderState>('ready')
 
-/** 开始拖动 */
-function handleStartDrag(event: MouseEvent) {
-  const { clientX } = event
-  dragging.value = true
-  startPosition.clientX = clientX
-  startPosition.left = slideLeft.value
-}
-/** 拖动 */
-function handleDrag(event: MouseEvent) {
-  if (!dragging.value) return
-  const { clientX } = event
-  const left = clientX - startPosition.clientX + startPosition.left
-  const maxLeft = props.width - props.sliderSize
-  const value = clamp(left, 0, maxLeft)
-  slideLeft.value = value
-  const percent = value / maxLeft
-  blockLeft.value = percent * (props.width - blockRealSize.value)
-}
-
-const succeed = ref(false)
-const failed = ref(false)
-const animate = ref(false)
+let errorTimes = 0
 const maxError = ref(false)
-/** 结束拖动 */
-function handleStopDrag() {
-  if (!dragging.value) return
-  dragging.value = false
 
+function finish() {
   if (Math.abs(answer - blockLeft.value) < props.range) {
+    sliderState.value = 'pass'
     emits('success')
     errorTimes = 0
-    succeed.value = true
   } else {
-    emits('error')
     errorTimes += 1
-    if (errorTimes >= maxErrorTimes) {
+    if (errorTimes >= 5) {
       maxError.value = true
     } else {
-      failed.value = true
-
+      sliderState.value = 'error'
+      initPuzzle()
       setTimeout(() => {
-        animate.value = true
-        failed.value = false
-        initPuzzle()
-      }, 100)
-
-      setTimeout(() => {
-        animate.value = false
+        sliderState.value = 'ready'
       }, 400)
     }
-  }
-}
-useEvent('mousemove', handleDrag)
-useEvent('mouseup', handleStopDrag)
-useEvent('blur', handleStopDrag)
-/** 滑块图标 */
-const sliderIcon = computed(() => {
-  if (succeed.value) {
-    return IconCheck
-  }
-  if (failed.value) {
-    return IconClose
-  }
-  return IconArrowRight
-})
-/** 滑动提示信息 */
-const sliderTipText = computed(() => {
-  if (succeed.value || failed.value) {
-    return ''
-  }
-  if (maxError.value) {
-    return props.maxErrorText
-  }
-  return props.tipText
-})
-
-const maxErrorTimes = 5
-let errorTimes = 0
-
-function handleClickRetry() {
-  if (maxError.value) {
-    initPuzzle()
+    emits('fail')
   }
 }
 </script>
@@ -381,68 +311,37 @@ function handleClickRetry() {
           :width="width"
           :height="height"
           :style="{
-            opacity: succeed ? '1' : '',
+            opacity: sliderState === 'pass' ? '1' : '',
           }"
         ></canvas>
       </div>
 
-      <div v-show="loading" class="load-container">
-        <Loading />
+      <div class="load-container">
+        <Loading v-if="loading" :text="loadingText" />
+        <Error v-else-if="errorText" :text="errorText" />
       </div>
 
       <div class="top-container">
-        <BtnList :show-refresh="!succeed" @refresh="refreshImg" />
+        <BtnList :show-refresh="sliderState !== 'pass'" @refresh="refreshImg" />
       </div>
     </div>
 
     <div class="puzzle-control">
-      <div
-        class="slider"
-        :class="{ 'slider--error': maxError }"
-        :style="{
-          height: `${sliderSize}px`,
-          borderRadius: `${borderRadius}px`,
-        }"
-        @click="handleClickRetry"
-      >
-        <div
-          v-show="!maxError"
-          class="slider-bar"
-          :class="{
-            'slider-bar--dragging': dragging,
-            'slider-bar--waiting': !succeed && !failed,
-            'slider-bar--succeed': succeed,
-            'slider-bar--failed': failed,
-            'slider-bar--animate': animate,
-          }"
-          :style="{
-            width: `${sliderSize + slideLeft}px`,
-            height: `${sliderSize}px`,
-            borderRadius: `${borderRadius}px`,
-          }"
-        >
-          <div
-            class="slider-btn"
-            :style="{
-              width: `${sliderSize - 2}px`,
-              borderRadius: `${borderRadius}px`,
-            }"
-            @mousedown="handleStartDrag"
-          >
-            <component :is="sliderIcon" />
-          </div>
-        </div>
-        <div
-          v-show="!dragging"
-          class="slider-tip"
-          :style="{
-            paddingLeft: `${maxError ? 0 : sliderSize - 1}px`,
-          }"
-        >
-          <IconClose v-if="maxError" class="slider-tip_icon" />
-          <span class="slider-tip_text">{{ sliderTipText }}</span>
-        </div>
-      </div>
+      <Slider
+        :width="width"
+        :border-radius="borderRadius"
+        v-model="blockLeft"
+        :max="sliderMax"
+        :state="sliderState"
+        :size="sliderSize"
+        :tip-text="tipText"
+        :loading-text="loadingText"
+        :max-error-text="maxErrorText"
+        :loading="loading"
+        :max-error="maxError"
+        @finish="finish"
+        @refresh="refreshImg"
+      />
     </div>
   </div>
 </template>
@@ -495,106 +394,5 @@ function handleClickRetry() {
   right: 0;
   top: 0;
   z-index: 20;
-}
-
-.slider {
-  position: relative;
-  color: #45494c;
-  border: 1px solid #e4e7eb;
-  background-color: #f7f9fa;
-  box-sizing: border-box;
-}
-
-.slider--error {
-  border-color: #f57a7a;
-  background-color: #fce1e1;
-  color: #f57a7a;
-  cursor: pointer;
-}
-
-.slider-bar {
-  position: absolute;
-  box-sizing: border-box;
-  top: -1px;
-  left: -1px;
-  border: 1px solid transparent;
-}
-
-.slider-bar--dragging {
-  border-color: #1991fa;
-  background-color: #d1e9fe;
-
-  .slider-btn {
-    color: #fff;
-    background-color: #1991fa;
-  }
-}
-
-.slider-bar--succeed {
-  border-color: #52ccba;
-  background-color: #d2f4ef;
-
-  .slider-btn {
-    color: #fff;
-    background-color: #52ccba;
-  }
-}
-.slider-bar--failed {
-  border-color: #f57a7a;
-  background-color: #fce1e1;
-
-  .slider-btn {
-    color: #fff;
-    background-color: #f57a7a;
-  }
-}
-
-.slider-bar--animate {
-  transition: width 0.3s ease-out;
-}
-
-.slider-bar--waiting {
-  .slider-btn:hover {
-    color: #fff;
-    background-color: #1991fa;
-  }
-}
-
-.slider-btn {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  color: #333;
-  background-color: #fff;
-  box-shadow: 0 0 3px rgb(0 0 0 / 30%);
-  cursor: pointer;
-
-  transition: background-color 0.2s linear;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.slider-tip {
-  height: 100%;
-
-  display: flex;
-  align-items: center;
-
-  justify-content: center;
-}
-
-.slider-tip_text {
-  line-height: 18px;
-  user-select: none;
-}
-
-.slider-tip_icon {
-  vertical-align: -0.15em;
-  display: inline-block;
-
-  margin-right: 5px;
 }
 </style>

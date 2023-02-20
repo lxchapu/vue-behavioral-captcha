@@ -1,11 +1,7 @@
 <script lang="ts" setup>
-import { PuzzleSlider } from './components'
-
-function handleSuccess() {
-  console.log('success')
-}
+import { SlidePuzzle } from './components'
 </script>
 
 <template>
-  <PuzzleSlider @success="handleSuccess" />
+  <SlidePuzzle />
 </template>
