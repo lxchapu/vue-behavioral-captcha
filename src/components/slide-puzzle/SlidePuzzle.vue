@@ -84,6 +84,7 @@ async function initPuzzle() {
   !blockCtx && (blockCtx = blockCanvasRef.value!.getContext('2d'))
 
   blockLeft.value = 0
+  maxError.value = false
 
   clearCanvas()
 
@@ -211,7 +212,6 @@ const loading = ref(false)
 /** 刷新图片 */
 async function refreshImg() {
   await initPuzzle()
-  maxError.value = false
   sliderState.value = 'ready'
 }
 
@@ -252,27 +252,38 @@ onMounted(() => {
 const blockLeft = ref(0)
 const sliderMax = computed(() => props.width - blockRealSize.value)
 const sliderState = ref<SliderState>('ready')
+const sliderTipText = computed(() => {
+  if (loading.value) {
+    return props.loadingText
+  }
+  if (errorText.value) {
+    return errorText.value
+  }
+  if (maxError.value) {
+    return props.maxErrorText
+  }
+  return props.tipText
+})
 
 let errorTimes = 0
 const maxError = ref(false)
 
-function finish() {
+async function finish() {
   if (Math.abs(answer - blockLeft.value) < props.range) {
     sliderState.value = 'pass'
     emits('success')
     errorTimes = 0
   } else {
+    emits('fail')
     errorTimes += 1
     if (errorTimes >= 5) {
       maxError.value = true
+      errorTimes = 0
     } else {
       sliderState.value = 'error'
-      initPuzzle()
-      setTimeout(() => {
-        sliderState.value = 'ready'
-      }, 400)
+      await initPuzzle()
+      sliderState.value = 'ready'
     }
-    emits('fail')
   }
 }
 </script>
@@ -334,11 +345,9 @@ function finish() {
         :max="sliderMax"
         :state="sliderState"
         :size="sliderSize"
-        :tip-text="tipText"
-        :loading-text="loadingText"
-        :max-error-text="maxErrorText"
-        :loading="loading"
+        :tip-text="sliderTipText"
         :max-error="maxError"
+        :disable="loading"
         @finish="finish"
         @refresh="refreshImg"
       />

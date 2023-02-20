@@ -17,15 +17,14 @@ const props = defineProps({
   /** 滑块大小 */
   size: { type: Number, required: true },
   tipText: { type: String, required: true },
-  maxErrorText: { type: String, required: true },
-  loadingText: { type: String, required: true },
   state: { type: String as PropType<SliderState>, default: 'ready' },
-  loading: { type: Boolean, default: false },
   maxError: { type: Boolean, default: false },
+  disable: { type: Boolean, default: false },
 })
 
 const emits = defineEmits(['update:modelValue', 'refresh', 'finish'])
 
+const disable = computed(() => props.disable || props.state === 'pass' || props.state === 'error')
 /* 拖拽中 */
 const dragging = ref(false)
 /* 记录开始信息 */
@@ -36,10 +35,6 @@ const start = {
   value: 0,
 }
 
-const disabled = computed(() => props.state === 'error' || props.state === 'pass')
-const sliderBarVisible = computed(
-  () => props.state === 'error' || (!props.maxError && !props.loading)
-)
 const sliderBarWidth = computed(() => {
   const { modelValue, min, max, size, width } = props
   return ((modelValue - min) / (max - min)) * (width - size) + size
@@ -57,19 +52,7 @@ const sliderIcon = computed(() => {
 })
 /** 滑动提示信息 */
 const sliderTipText = computed(() => {
-  if (props.maxError) {
-    return props.maxErrorText
-  }
-  if (props.state === 'error') {
-    return ''
-  }
-  if (props.loading) {
-    return props.loadingText
-  }
-  if (!dragging.value && props.state === 'ready') {
-    return props.tipText
-  }
-  return ''
+  return dragging.value || props.state === 'pass' ? '' : props.tipText
 })
 
 function getPageX(event: MouseEvent | TouchEvent) {
@@ -82,7 +65,7 @@ function getPageX(event: MouseEvent | TouchEvent) {
 
 /** 开始拖动 */
 function handleStartDrag(event: MouseEvent | TouchEvent) {
-  if (disabled.value) return
+  if (disable.value) return
 
   const clientX = getPageX(event)
   dragging.value = true
@@ -91,7 +74,7 @@ function handleStartDrag(event: MouseEvent | TouchEvent) {
 }
 /** 拖动 */
 function handleDrag(event: MouseEvent | TouchEvent) {
-  if (!dragging.value || disabled.value) return
+  if (!dragging.value || disable.value) return
 
   const clientX = getPageX(event)
   const { min, max, size, width } = props
@@ -101,7 +84,7 @@ function handleDrag(event: MouseEvent | TouchEvent) {
 }
 /** 结束拖动 */
 function handleStopDrag() {
-  if (!dragging.value || disabled.value) return
+  if (!dragging.value || disable.value) return
   dragging.value = false
   emits('finish')
 }
@@ -131,7 +114,7 @@ useEvent('blur', handleStopDrag)
     }"
   >
     <div
-      v-show="sliderBarVisible"
+      v-show="!maxError"
       class="slider-bar"
       :class="{
         [`slider-bar--${state}`]: true,
@@ -145,6 +128,9 @@ useEvent('blur', handleStopDrag)
     >
       <div
         class="slider-btn"
+        :class="{
+          'slider-btn--disable': disable,
+        }"
         :style="{
           width: `${size - 2}px`,
           borderRadius: `${borderRadius}px`,
@@ -159,7 +145,7 @@ useEvent('blur', handleStopDrag)
       v-show="sliderTipText"
       class="slider-tip"
       :style="{
-        paddingLeft: `${sliderBarVisible ? size - 2 : 0}px`,
+        paddingLeft: `${maxError ? 0 : size - 2}px`,
       }"
       @click="handleClickRetry"
     >
@@ -191,10 +177,12 @@ useEvent('blur', handleStopDrag)
   top: -1px;
   left: -1px;
   border: 1px solid transparent;
+
+  transition: width 0.3s ease-out;
 }
 
 .slider-bar--ready {
-  .slider-btn:hover {
+  .slider-btn:not(.slider-btn--disable):hover {
     color: #fff;
     background-color: #1991fa;
   }
@@ -203,6 +191,7 @@ useEvent('blur', handleStopDrag)
 .slider-bar--moving {
   border-color: #1991fa;
   background-color: #d1e9fe;
+  transition: unset;
 
   .slider-btn {
     color: #fff;
@@ -222,7 +211,6 @@ useEvent('blur', handleStopDrag)
 .slider-bar--error {
   border-color: #f57a7a;
   background-color: #fce1e1;
-  transition: width 0.3s ease-out 0.2s;
 
   .slider-btn {
     color: #fff;
@@ -244,6 +232,10 @@ useEvent('blur', handleStopDrag)
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.slider-btn--disable {
+  cursor: not-allowed;
 }
 
 .slider-tip {
