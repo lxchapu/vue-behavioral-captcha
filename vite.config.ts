@@ -15,6 +15,7 @@ export default defineConfig({
   },
   test: {
     root: 'src',
+    environment: 'jsdom',
   },
   server: {
     port: 8080,
