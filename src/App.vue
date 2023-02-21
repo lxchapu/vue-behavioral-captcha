@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import { SlidePuzzle } from './components'
+import { SlidePuzzle, RotatePuzzle } from './components'
 </script>
 
 <template>
   <SlidePuzzle />
+
+  <RotatePuzzle />
 </template>
