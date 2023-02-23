@@ -6,5 +6,6 @@ import { PointCaptcha, SlideCaptcha, RotateCaptcha } from './components'
   <PointCaptcha />
   <PointCaptcha type="idiom" />
   <SlideCaptcha />
+  <SlideCaptcha block-type="suqare" />
   <RotateCaptcha />
 </template>

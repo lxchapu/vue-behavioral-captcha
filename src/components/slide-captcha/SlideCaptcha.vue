@@ -4,7 +4,7 @@ import BtnList from '../BtnList.vue'
 import CaptchaControl from './CaptchaControl.vue'
 
 import type { PropType } from 'vue'
-import type { BlockType, ControlState } from './types'
+import type { ControlState } from './types'
 
 import { ref, computed, onMounted } from 'vue'
 import { loadImg, random } from '@/utils'
@@ -15,7 +15,7 @@ const props = defineProps({
   height: { type: Number, default: 160 },
   borderRadius: { type: Number, default: 2 },
   blockSize: { type: Number, default: 40 },
-  blockType: { type: String as PropType<BlockType>, default: 'jigsaw' },
+  blockType: { type: String as PropType<'jigsaw' | 'suqare'>, default: 'jigsaw' },
   sliderSize: { type: Number, default: 40 },
   range: { type: Number, default: 4 },
   imgList: {
@@ -230,19 +230,31 @@ function drawBlockPath(
   const offset = bulgeOffset.value
   const size = props.blockSize
 
-  ctx.beginPath()
-  ctx.moveTo(x, y + h)
-  /* top */
-  ctx.arc(x + size / 2, y + r, r, 0.5 * PI + offsetAngle, 0.5 * PI - offsetAngle)
-  ctx.lineTo(x + size, y + h)
-  /* right */
-  ctx.arc(x + size + offset, y + h + size / 2, r, PI + offsetAngle, PI - offsetAngle)
-  ctx.lineTo(x + size, y + h + size)
-  /* bottom */
-  ctx.arc(x + size / 2, y + size + r, r, 0.5 * PI - offsetAngle, 0.5 * PI + offsetAngle, true)
-  ctx.lineTo(x, y + size + h)
-  /* left */
-  ctx.lineTo(x, y + h)
+  if (props.blockType === 'jigsaw') {
+    ctx.beginPath()
+    ctx.moveTo(x, y + h)
+    /* top */
+    ctx.arc(x + size / 2, y + r, r, 0.5 * PI + offsetAngle, 0.5 * PI - offsetAngle)
+    ctx.lineTo(x + size, y + h)
+    /* right */
+    ctx.arc(x + size + offset, y + h + size / 2, r, PI + offsetAngle, PI - offsetAngle)
+    ctx.lineTo(x + size, y + h + size)
+    /* bottom */
+    ctx.arc(x + size / 2, y + size + r, r, 0.5 * PI - offsetAngle, 0.5 * PI + offsetAngle, true)
+    ctx.lineTo(x, y + size + h)
+    /* left */
+    ctx.lineTo(x, y + h)
+  } else {
+    console.log('yes')
+
+    const R = 5
+    ctx.beginPath()
+    ctx.moveTo(x + R, y)
+    ctx.arcTo(x + size, y, x + size, y + size, R)
+    ctx.arcTo(x + size, y + size, x, y + size, R)
+    ctx.arcTo(x, y + size, x, y, R)
+    ctx.arcTo(x, y, x + size, y, R)
+  }
 }
 
 onMounted(() => {
