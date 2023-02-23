@@ -19,9 +19,6 @@ defineProps({
   width: 26px;
   line-height: 32px;
   height: 32px;
-  cursor: pointer;
-
-  transform: translate(-50%, -100%);
 
   &::before {
     position: absolute;

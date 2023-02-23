@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import Loading from '../slide-puzzle/Loading.vue'
-import BtnList from '../slide-puzzle/BtnList.vue'
-import Error from '../slide-puzzle/Error.vue'
+import LoadContainer from '../LoadContainer.vue'
+import BtnList from '../BtnList.vue'
 import Point from './Point.vue'
 
 import type { PropType } from 'vue'
@@ -125,7 +124,6 @@ function handleRefresh() {
   <div
     class="captcha-panel"
     :style="{
-      width: `${width}px`,
       height: `${height}px`,
       borderRadius: `${borderRadius}px`,
     }"
@@ -145,10 +143,11 @@ function handleRefresh() {
       />
     </div>
 
-    <div v-show="state.loading || state.loadError" class="load-container">
-      <Loading v-if="state.loading" :text="loadingText" />
-      <Error v-else-if="state.loadError" :text="state.loadError" />
-    </div>
+    <LoadContainer
+      v-show="state.loading || state.loadError"
+      :state="state.loading ? 'loading' : 'error'"
+      :text="state.loading ? loadingText : state.loadError"
+    />
 
     <div class="top-container">
       <BtnList :data="btnGroup" />
@@ -168,6 +167,12 @@ function handleRefresh() {
 .img {
   vertical-align: top;
 }
+
+.point {
+  position: absolute;
+  cursor: pointer;
+  transform: translate(-50%, -100%);
+}
 .load-container {
   position: absolute;
   z-index: 10;
@@ -175,11 +180,6 @@ function handleRefresh() {
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-}
-
-.point {
-  position: absolute;
 }
 
 .top-container {

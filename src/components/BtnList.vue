@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { IconReload } from '../icons'
+import { IconReload } from './icons'
 
 import type { PropType } from 'vue'
 
@@ -11,6 +11,7 @@ defineProps({
     required: true,
   },
 })
+
 defineEmits(['refresh'])
 </script>
 
@@ -26,7 +27,7 @@ defineEmits(['refresh'])
       :disabled="item.disabled"
       @click="item.event"
     >
-      <IconReload class="btn_icon" />
+      <IconReload class="btn__icon" />
     </button>
   </div>
 </template>
@@ -52,7 +53,7 @@ defineEmits(['refresh'])
   }
 }
 
-.btn_icon {
+.btn__icon {
   width: 100%;
   height: 100%;
 }

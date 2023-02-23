@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import Loading from './Loading.vue'
-import BtnList from './BtnList.vue'
-import Slider from './Slider.vue'
-import Error from './Error.vue'
+import LoadContainer from '../LoadContainer.vue'
+import BtnList from '../BtnList.vue'
+import CaptchaControl from './CaptchaControl.vue'
 
 import type { PropType } from 'vue'
-import type { BlockType, SliderState } from './types'
+import type { BlockType, ControlState } from './types'
 
 import { ref, computed, onMounted } from 'vue'
 import { loadImg, random } from '@/utils'
@@ -31,7 +30,7 @@ const props = defineProps({
   },
   tipText: { type: String, default: '向右拖动滑块填充拼图' },
   maxErrorText: { type: String, default: '失败过多，点击重试' },
-  loadingText: { type: String, default: '加载中...' },
+  loadingText: { type: String, default: '加载中…' },
 })
 
 const emits = defineEmits(['success', 'fail'])
@@ -251,7 +250,7 @@ onMounted(() => {
 })
 const blockLeft = ref(0)
 const sliderMax = computed(() => props.width - blockRealSize.value)
-const sliderState = ref<SliderState>('ready')
+const sliderState = ref<ControlState>('ready')
 const sliderTipText = computed(() => {
   if (loading.value) {
     return props.loadingText
@@ -270,7 +269,7 @@ const maxError = ref(false)
 
 async function finish() {
   if (Math.abs(answer - blockLeft.value) < props.range) {
-    sliderState.value = 'pass'
+    sliderState.value = 'success'
     emits('success')
     errorTimes = 0
   } else {
@@ -291,7 +290,7 @@ const btnGroup = computed(() => {
   return [
     {
       title: '刷新',
-      visible: sliderState.value !== 'pass',
+      visible: sliderState.value !== 'success',
       disabled: loading.value,
       event: refreshImg,
     },
@@ -301,13 +300,13 @@ const btnGroup = computed(() => {
 
 <template>
   <div
-    class="puzzle-slider"
+    class="slide-captcha"
     :style="{
       width: `${width}px`,
     }"
   >
     <div
-      class="puzzle-panel"
+      class="captcha-panel"
       :style="{
         height: `${height}px`,
         borderRadius: `${borderRadius}px`,
@@ -333,45 +332,44 @@ const btnGroup = computed(() => {
           :width="width"
           :height="height"
           :style="{
-            opacity: sliderState === 'pass' ? '1' : '',
+            opacity: sliderState === 'success' ? '1' : '',
           }"
         ></canvas>
       </div>
 
-      <div class="load-container">
-        <Loading v-if="loading" :text="loadingText" />
-        <Error v-else-if="errorText" :text="errorText" />
-      </div>
+      <LoadContainer
+        v-show="loading || errorText"
+        :state="loading ? 'loading' : 'error'"
+        :text="loading ? loadingText : errorText"
+      />
 
       <div class="top-container">
         <BtnList :data="btnGroup" />
       </div>
     </div>
 
-    <div class="puzzle-control">
-      <Slider
-        :width="width"
-        :border-radius="borderRadius"
-        v-model="blockLeft"
-        :max="sliderMax"
-        :state="sliderState"
-        :size="sliderSize"
-        :tip-text="sliderTipText"
-        :max-error="maxError"
-        :disable="loading"
-        @finish="finish"
-        @refresh="refreshImg"
-      />
-    </div>
+    <CaptchaControl
+      :width="width"
+      :height="sliderSize"
+      :border-radius="borderRadius"
+      v-model="blockLeft"
+      :max="sliderMax"
+      :state="sliderState"
+      :tip-text="sliderTipText"
+      :max-error="maxError"
+      :disable="loading"
+      @finish="finish"
+      @refresh="refreshImg"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.puzzle-slider {
+.slide-captcha {
   font-size: 14px;
 }
 
-.puzzle-panel {
+.captcha-panel {
   position: relative;
   overflow: hidden;
   margin-bottom: 15px;

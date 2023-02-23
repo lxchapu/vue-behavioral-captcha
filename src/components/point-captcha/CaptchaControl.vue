@@ -39,7 +39,6 @@ function handleClickTip() {
     class="captcha-control"
     :class="`captcha-control--${state}`"
     :style="{
-      width: `${width}px`,
       height: `${height}px`,
       borderRadius: `${borderRadius}px`,
     }"

@@ -7,7 +7,7 @@ import type { ControlState, PointCaptchaType, TextItem } from './types'
 
 import { onMounted, ref, computed, nextTick } from 'vue'
 import { createTextList } from './useCreateCaptcha'
-import { random, randomIdiom, randomText } from '@/utils'
+import { getDistance, random, randomIdiom, randomText } from '@/utils'
 
 const props = defineProps({
   width: { type: Number, default: 320 },
@@ -28,7 +28,7 @@ const props = defineProps({
   },
 })
 
-const emits = defineEmits(['success', 'error'])
+const emits = defineEmits(['success', 'fail'])
 
 let errorTimes = 0
 
@@ -125,7 +125,7 @@ function finish(pointList: { x: number; y: number }[]) {
   } else {
     errorTimes += 1
     controlState.value = 'error'
-    emits('error')
+    emits('fail')
     if (errorTimes < 5) {
       initCaptcha()
     } else {
@@ -152,10 +152,6 @@ function getClosestText(x: number, y: number) {
     text,
     inRange,
   }
-}
-/** 计算两点距离 */
-function getDistance(x1: number, y1: number, x2: number, y2: number) {
-  return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
 }
 
 /** 刷新验证码 */

@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import { Slider } from '../slide-puzzle'
-import Loading from '../slide-puzzle/Loading.vue'
-import Error from '../slide-puzzle/Error.vue'
+import CaptchaControl from './CaptchaControl.vue'
+import LoadContainer from '../LoadContainer.vue'
 
-import { onMounted, type PropType } from 'vue'
-import type { SliderState } from '../slide-puzzle/types'
+import type { PropType } from 'vue'
+import type { ControlState } from './types'
 
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { loadImg, random } from '@/utils'
 
 const props = defineProps({
@@ -26,13 +25,13 @@ const props = defineProps({
   },
   tipText: { type: String, default: '拖动滑块旋转到正确位置' },
   maxErrorText: { type: String, default: '失败过多，点击重试' },
-  loadingText: { type: String, default: '加载中...' },
+  loadingText: { type: String, default: '加载中…' },
 })
 
 const emits = defineEmits(['success', 'fail'])
 
 const imgAngle = ref(0)
-const sliderState = ref<SliderState>('ready')
+const sliderState = ref<ControlState>('ready')
 const loading = ref(false)
 const maxError = ref(false)
 const errorText = ref('')
@@ -51,7 +50,7 @@ const sliderTipText = computed(() => {
 let errorTimes = 0
 async function finish() {
   if (Math.abs(answer + imgAngle.value - 360) < props.range) {
-    sliderState.value = 'pass'
+    sliderState.value = 'success'
     emits('success')
     errorTimes = 0
   } else {
@@ -120,15 +119,14 @@ onMounted(() => {
 
 <template>
   <div
-    class="rotate-puzzle"
+    class="rotate-captcha"
     :style="{
       width: `${width}px`,
     }"
   >
     <div
-      class="puzzle-panel"
+      class="captcha-panel"
       :style="{
-        width: `${width}px`,
         height: `${width}px`,
       }"
     >
@@ -145,33 +143,34 @@ onMounted(() => {
         </canvas>
       </div>
 
-      <div class="load-container">
-        <Loading v-if="loading" :text="loadingText" />
-        <Error v-else-if="errorText" :text="errorText" />
-      </div>
-    </div>
-    <div class="puzzle-control">
-      <Slider
-        v-model="imgAngle"
-        :width="width"
-        :border-radius="borderRadius"
-        :max="360"
-        :state="sliderState"
-        :size="sliderSize"
-        :tip-text="sliderTipText"
-        :max-error="maxError"
-        :disable="loading"
-        @finish="finish"
-        @refresh="refreshImg"
+      <LoadContainer
+        v-show="loading || errorText"
+        :state="loading ? 'loading' : 'error'"
+        :text="loading ? loadingText : errorText"
       />
     </div>
+    <CaptchaControl
+      v-model="imgAngle"
+      :width="width"
+      :height="sliderSize"
+      :border-radius="borderRadius"
+      :max="360"
+      :state="sliderState"
+      :tip-text="sliderTipText"
+      :max-error="maxError"
+      :disable="loading"
+      @finish="finish"
+      @refresh="refreshImg"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.puzzle-panel {
+.captcha-panel {
   position: relative;
   margin-bottom: 15px;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .img-container {
@@ -189,7 +188,5 @@ onMounted(() => {
   top: 0;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
 }
 </style>

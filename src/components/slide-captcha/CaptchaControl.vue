@@ -2,7 +2,7 @@
 import { IconArrowRight, IconClose, IconCheck } from '../icons'
 
 import type { PropType } from 'vue'
-import type { SliderState } from './types'
+import type { ControlState } from './types'
 
 import { ref, computed } from 'vue'
 import { clamp } from '@/utils'
@@ -13,18 +13,19 @@ const props = defineProps({
   min: { type: Number, default: 0 },
   max: { type: Number, default: 100 },
   width: { type: Number, required: true },
+  height: { type: Number, required: true },
   borderRadius: { type: Number, required: true },
-  /** 滑块大小 */
-  size: { type: Number, required: true },
   tipText: { type: String, required: true },
-  state: { type: String as PropType<SliderState>, default: 'ready' },
+  state: { type: String as PropType<ControlState>, default: 'ready' },
   maxError: { type: Boolean, default: false },
-  disable: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
 })
 
 const emits = defineEmits(['update:modelValue', 'refresh', 'finish'])
 
-const disable = computed(() => props.disable || props.state === 'pass' || props.state === 'error')
+const disabled = computed(
+  () => props.disabled || props.state === 'success' || props.state === 'error'
+)
 /* 拖拽中 */
 const dragging = ref(false)
 /* 记录开始信息 */
@@ -36,13 +37,13 @@ const start = {
 }
 
 const sliderBarWidth = computed(() => {
-  const { modelValue, min, max, size, width } = props
-  return ((modelValue - min) / (max - min)) * (width - size) + size
+  const { modelValue, min, max, height, width } = props
+  return ((modelValue - min) / (max - min)) * (width - height) + height
 })
 
 /** 滑块图标 */
 const sliderIcon = computed(() => {
-  if (props.state === 'pass') {
+  if (props.state === 'success') {
     return IconCheck
   }
   if (props.state === 'error') {
@@ -52,7 +53,7 @@ const sliderIcon = computed(() => {
 })
 /** 滑动提示信息 */
 const sliderTipText = computed(() => {
-  return dragging.value || props.state === 'pass' ? '' : props.tipText
+  return dragging.value || props.state === 'success' ? '' : props.tipText
 })
 
 function getPageX(event: MouseEvent | TouchEvent) {
@@ -65,7 +66,7 @@ function getPageX(event: MouseEvent | TouchEvent) {
 
 /** 开始拖动 */
 function handleStartDrag(event: MouseEvent | TouchEvent) {
-  if (disable.value) return
+  if (disabled.value) return
 
   const clientX = getPageX(event)
   dragging.value = true
@@ -74,17 +75,17 @@ function handleStartDrag(event: MouseEvent | TouchEvent) {
 }
 /** 拖动 */
 function handleDrag(event: MouseEvent | TouchEvent) {
-  if (!dragging.value || disable.value) return
+  if (!dragging.value || disabled.value) return
 
   const clientX = getPageX(event)
-  const { min, max, size, width } = props
-  const v = ((clientX - start.clientX) / (width - size)) * (max - min)
+  const { min, max, height, width } = props
+  const v = ((clientX - start.clientX) / (width - height)) * (max - min)
   const value = clamp(v + start.value, min, max)
   emits('update:modelValue', value)
 }
 /** 结束拖动 */
 function handleStopDrag() {
-  if (!dragging.value || disable.value) return
+  if (!dragging.value || disabled.value) return
   dragging.value = false
   emits('finish')
 }
@@ -105,11 +106,10 @@ useEvent('blur', handleStopDrag)
 
 <template>
   <div
-    class="slider"
-    :class="{ 'slider--error': maxError }"
+    class="captcha-control"
+    :class="{ 'captcha-control--error': maxError }"
     :style="{
-      width: `${width}px`,
-      height: `${size}px`,
+      height: `${height}px`,
       borderRadius: `${borderRadius}px`,
     }"
   >
@@ -122,17 +122,17 @@ useEvent('blur', handleStopDrag)
       }"
       :style="{
         width: `${sliderBarWidth}px`,
-        height: `${size}px`,
+        height: `${height}px`,
         borderRadius: `${borderRadius}px`,
       }"
     >
       <div
         class="slider-btn"
         :class="{
-          'slider-btn--disable': disable,
+          'slider-btn--disabled': disabled,
         }"
         :style="{
-          width: `${size - 2}px`,
+          width: `${height - 2}px`,
           borderRadius: `${borderRadius}px`,
         }"
         @mousedown="handleStartDrag"
@@ -145,18 +145,18 @@ useEvent('blur', handleStopDrag)
       v-show="sliderTipText"
       class="slider-tip"
       :style="{
-        paddingLeft: `${maxError ? 0 : size - 2}px`,
+        paddingLeft: `${maxError ? 0 : height - 2}px`,
       }"
       @click="handleClickRetry"
     >
-      <IconClose v-if="maxError" class="slider-tip_icon" />
-      <span class="slider-tip_text">{{ sliderTipText }}</span>
+      <IconClose v-if="maxError" class="slider-tip__icon" />
+      <span class="slider-tip__text">{{ sliderTipText }}</span>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.slider {
+.captcha-control {
   position: relative;
   color: #45494c;
   border: 1px solid #e4e7eb;
@@ -164,7 +164,7 @@ useEvent('blur', handleStopDrag)
   box-sizing: border-box;
 }
 
-.slider--error {
+.captcha-control--error {
   border-color: #f57a7a;
   background-color: #fce1e1;
   color: #f57a7a;
@@ -182,7 +182,7 @@ useEvent('blur', handleStopDrag)
 }
 
 .slider-bar--ready {
-  .slider-btn:not(.slider-btn--disable):hover {
+  .slider-btn:not(.slider-btn--disabled):hover {
     color: #fff;
     background-color: #1991fa;
   }
@@ -199,7 +199,7 @@ useEvent('blur', handleStopDrag)
   }
 }
 
-.slider-bar--pass {
+.slider-bar--success {
   border-color: #52ccba;
   background-color: #d2f4ef;
 
@@ -234,7 +234,7 @@ useEvent('blur', handleStopDrag)
   justify-content: center;
 }
 
-.slider-btn--disable {
+.slider-btn--disabled {
   cursor: not-allowed;
 }
 
@@ -247,12 +247,12 @@ useEvent('blur', handleStopDrag)
   justify-content: center;
 }
 
-.slider-tip_text {
+.slider-tip__text {
   line-height: 18px;
   user-select: none;
 }
 
-.slider-tip_icon {
+.slider-tip__icon {
   vertical-align: -0.15em;
   display: inline-block;
 

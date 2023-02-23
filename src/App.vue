@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { SlidePuzzle, RotatePuzzle, PointCaptcha } from './components'
+import { PointCaptcha, SlideCaptcha, RotateCaptcha } from './components'
 </script>
 
 <template>
   <PointCaptcha />
   <PointCaptcha type="idiom" />
-  <SlidePuzzle />
-  <RotatePuzzle />
+  <SlideCaptcha />
+  <RotateCaptcha />
 </template>
