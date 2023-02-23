@@ -5,8 +5,8 @@ import type { PropType } from 'vue'
 import type { SliderState } from './types'
 
 import { ref, computed } from 'vue'
-import { clamp } from './utils'
-import { useEvent } from './useEvent'
+import { clamp } from '@/utils'
+import { useEvent } from '@/composables/useEvent'
 
 const props = defineProps({
   modelValue: { type: Number, required: true },

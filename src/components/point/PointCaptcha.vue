@@ -6,8 +6,8 @@ import type { PropType } from 'vue'
 import type { ControlState, PointCaptchaType, TextItem } from './types'
 
 import { onMounted, ref, computed, nextTick } from 'vue'
-import { createTextList, getRandomIdiom, getRandomText } from './useCreateCaptcha'
-import { random } from '../slide-puzzle/utils'
+import { createTextList } from './useCreateCaptcha'
+import { random, randomIdiom, randomText } from '@/utils'
 
 const props = defineProps({
   width: { type: Number, default: 320 },
@@ -79,10 +79,10 @@ function initCaptcha() {
 
   let list = []
   if (type === 'order') {
-    list = getRandomText(5)
+    list = randomText(5)
     answer.value = list.slice(0, 3)
   } else {
-    const idiom = getRandomIdiom()
+    const idiom = randomIdiom()
     list = idiom.split('')
   }
 

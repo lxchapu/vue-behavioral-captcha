@@ -1,4 +1,4 @@
-import { random, clamp } from './utils'
+import { random, clamp } from '../number'
 import { describe, expect, it } from 'vitest'
 
 describe('random()', () => {

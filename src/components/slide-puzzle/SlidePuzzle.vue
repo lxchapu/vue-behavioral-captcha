@@ -8,7 +8,7 @@ import type { PropType } from 'vue'
 import type { BlockType, SliderState } from './types'
 
 import { ref, computed, onMounted } from 'vue'
-import { loadImg, random } from './utils'
+import { loadImg, random } from '@/utils'
 
 const props = defineProps({
   /** 画布宽度 */

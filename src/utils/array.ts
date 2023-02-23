@@ -1,4 +1,4 @@
-import { random } from '../slide-puzzle/utils'
+import { random } from './number'
 
 /** 对数组随机排序 */
 export function shuffle(list: number[], len?: number) {

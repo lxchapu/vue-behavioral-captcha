@@ -7,7 +7,7 @@ import { onMounted, type PropType } from 'vue'
 import type { SliderState } from '../slide-puzzle/types'
 
 import { ref, computed } from 'vue'
-import { loadImg, random } from '../slide-puzzle/utils'
+import { loadImg, random } from '@/utils'
 
 const props = defineProps({
   width: { type: Number, default: 320 },

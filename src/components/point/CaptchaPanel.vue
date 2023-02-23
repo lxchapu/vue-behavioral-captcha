@@ -8,7 +8,7 @@ import type { PropType } from 'vue'
 import type { TextItem } from './types'
 
 import { onMounted, reactive, ref, computed } from 'vue'
-import { loadImg } from '../slide-puzzle/utils'
+import { loadImg } from '@/utils'
 
 const props = defineProps({
   width: { type: Number, required: true },
