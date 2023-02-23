@@ -245,8 +245,6 @@ function drawBlockPath(
     /* left */
     ctx.lineTo(x, y + h)
   } else {
-    console.log('yes')
-
     const R = 5
     ctx.beginPath()
     ctx.moveTo(x + R, y)
