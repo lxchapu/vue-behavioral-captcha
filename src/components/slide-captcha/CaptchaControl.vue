@@ -158,39 +158,46 @@ useEvent('blur', handleStopDrag)
 <style lang="scss" scoped>
 .captcha-control {
   position: relative;
-  color: #45494c;
-  border: 1px solid #e4e7eb;
-  background-color: #f7f9fa;
   box-sizing: border-box;
+  color: #45494c;
+  background-color: #f7f9fa;
+  border: 1px solid #e4e7eb;
 }
 
 .captcha-control--error {
-  border-color: #f57a7a;
-  background-color: #fce1e1;
   color: #f57a7a;
   cursor: pointer;
+  background-color: #fce1e1;
+  border-color: #f57a7a;
 }
 
 .slider-bar {
   position: absolute;
-  box-sizing: border-box;
   top: -1px;
   left: -1px;
+  box-sizing: border-box;
   border: 1px solid transparent;
-
   transition: width 0.3s ease-out;
 }
 
-.slider-bar--ready {
-  .slider-btn:not(.slider-btn--disabled):hover {
-    color: #fff;
-    background-color: #1991fa;
-  }
+.slider-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #333;
+  cursor: pointer;
+  background-color: #fff;
+  box-shadow: 0 0 3px rgb(0 0 0 / 30%);
+  transition: background-color 0.2s linear;
 }
 
 .slider-bar--moving {
-  border-color: #1991fa;
   background-color: #d1e9fe;
+  border-color: #1991fa;
   transition: unset;
 
   .slider-btn {
@@ -200,38 +207,30 @@ useEvent('blur', handleStopDrag)
 }
 
 .slider-bar--success {
-  border-color: #52ccba;
   background-color: #d2f4ef;
+  border-color: #52ccba;
 
   .slider-btn {
     color: #fff;
     background-color: #52ccba;
   }
 }
+
 .slider-bar--error {
-  border-color: #f57a7a;
   background-color: #fce1e1;
+  border-color: #f57a7a;
 
   .slider-btn {
     color: #fff;
     background-color: #f57a7a;
   }
 }
-.slider-btn {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  color: #333;
-  background-color: #fff;
-  box-shadow: 0 0 3px rgb(0 0 0 / 30%);
-  cursor: pointer;
 
-  transition: background-color 0.2s linear;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.slider-bar--ready {
+  .slider-btn:not(.slider-btn--disabled):hover {
+    color: #fff;
+    background-color: #1991fa;
+  }
 }
 
 .slider-btn--disabled {
@@ -239,12 +238,10 @@ useEvent('blur', handleStopDrag)
 }
 
 .slider-tip {
-  height: 100%;
-
   display: flex;
   align-items: center;
-
   justify-content: center;
+  height: 100%;
 }
 
 .slider-tip__text {
@@ -253,9 +250,8 @@ useEvent('blur', handleStopDrag)
 }
 
 .slider-tip__icon {
-  vertical-align: -0.15em;
   display: inline-block;
-
   margin-right: 5px;
+  vertical-align: -0.15em;
 }
 </style>

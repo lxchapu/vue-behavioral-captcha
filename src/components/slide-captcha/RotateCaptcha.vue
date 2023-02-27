@@ -169,8 +169,8 @@ onMounted(() => {
 .captcha-panel {
   position: relative;
   margin-bottom: 15px;
-  border-radius: 50%;
   overflow: hidden;
+  border-radius: 50%;
 }
 
 .img-container {
@@ -183,9 +183,9 @@ onMounted(() => {
 
 .load-container {
   position: absolute;
-  z-index: 10;
-  left: 0;
   top: 0;
+  left: 0;
+  z-index: 10;
   width: 100%;
   height: 100%;
 }

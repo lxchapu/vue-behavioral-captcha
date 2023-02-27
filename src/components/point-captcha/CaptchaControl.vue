@@ -55,28 +55,29 @@ function handleClickTip() {
 
 <style lang="scss" scoped>
 .captcha-control {
-  color: #45494c;
-  border: 1px solid #e4e7eb;
-  background-color: #f7f9fa;
   box-sizing: border-box;
+  color: #45494c;
+  background-color: #f7f9fa;
+  border: 1px solid #e4e7eb;
 }
+
 .captcha-control--error {
-  border-color: #f57a7a;
-  background-color: #fce1e1;
   color: #f57a7a;
+  background-color: #fce1e1;
+  border-color: #f57a7a;
 }
 
 .captcha-control--success {
-  border-color: #52ccba;
-  background-color: #d2f4ef;
   color: #52ccba;
+  background-color: #d2f4ef;
+  border-color: #52ccba;
 }
 
 .tip {
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
 }
 
 .tip--clickabled {
@@ -84,14 +85,16 @@ function handleClickTip() {
 }
 
 .tip__icon {
-  vertical-align: -0.15em;
   display: inline-block;
   margin-right: 5px;
+  vertical-align: -0.15em;
 }
+
 .tip__text {
   line-height: 18px;
   user-select: none;
 }
+
 .tip__anawer-text {
   font-weight: bold;
 }

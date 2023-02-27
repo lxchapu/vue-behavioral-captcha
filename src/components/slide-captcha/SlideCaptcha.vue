@@ -171,6 +171,7 @@ onMounted(() => {
 .slide-captcha {
   font-size: 14px;
 }
+
 .captcha-panel {
   margin-bottom: 15px;
 }

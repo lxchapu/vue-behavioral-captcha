@@ -17,38 +17,35 @@ defineProps({
 .point {
   position: relative;
   width: 26px;
-  line-height: 32px;
   height: 32px;
+  line-height: 32px;
 
   &::before {
     position: absolute;
-    left: 50%;
     top: 100%;
-    content: '';
+    left: 50%;
     box-sizing: border-box;
     width: 26px;
     height: 26px;
-
+    content: '';
+    background-color: rgba(#1a7ace, 0.8);
+    border: 2px solid #fff;
     border-radius: 50%;
     border-top-left-radius: 2px;
-    border: 2px solid #fff;
-
-    background-color: rgba(#1a7ace, 0.8);
-
-    transform-origin: left top;
     transform: rotate(225deg);
+    transform-origin: left top;
   }
 }
 
 .point__text {
   position: absolute;
-  left: 0;
   top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   font-size: 14px;
+  color: #fff;
   text-align: center;
   user-select: none;
-  color: #fff;
 }
 </style>

@@ -280,9 +280,9 @@ onMounted(() => {
 
 .load-container {
   position: absolute;
-  z-index: 10;
-  left: 0;
   top: 0;
+  left: 0;
+  z-index: 10;
   width: 100%;
   height: 100%;
 }
@@ -301,9 +301,11 @@ onMounted(() => {
   top: 0;
   left: 0;
 }
+
 .img-block {
   z-index: 1;
 }
+
 .img-full {
   z-index: 2;
   opacity: 0;
@@ -312,8 +314,8 @@ onMounted(() => {
 
 .top-container {
   position: absolute;
-  right: 0;
   top: 0;
+  right: 0;
   z-index: 20;
 }
 </style>

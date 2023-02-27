@@ -37,19 +37,19 @@ defineEmits(['refresh'])
   width: 30px;
   height: 30px;
   padding: 4px;
+  color: #f7f7f7;
+  cursor: pointer;
+  background-color: rgb(0 0 0 / 12%);
   border: none;
   outline: none;
-  color: #f7f7f7;
-  background-color: rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-
-  &:not(:disabled):hover {
-    color: white;
-    background-color: rgba(0, 0, 0, 0.2);
-  }
 
   &:disabled {
     cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    color: white;
+    background-color: rgb(0 0 0 / 20%);
   }
 }
 

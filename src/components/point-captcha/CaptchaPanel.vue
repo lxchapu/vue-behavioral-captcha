@@ -160,10 +160,12 @@ function handleRefresh() {
   position: relative;
   overflow: hidden;
 }
+
 .img-container {
   position: relative;
   overflow: hidden;
 }
+
 .img {
   vertical-align: top;
 }
@@ -173,19 +175,20 @@ function handleRefresh() {
   cursor: pointer;
   transform: translate(-50%, -100%);
 }
+
 .load-container {
   position: absolute;
-  z-index: 10;
-  left: 0;
   top: 0;
+  left: 0;
+  z-index: 10;
   width: 100%;
   height: 100%;
 }
 
 .top-container {
   position: absolute;
-  right: 0;
   top: 0;
+  right: 0;
   z-index: 20;
 }
 </style>
