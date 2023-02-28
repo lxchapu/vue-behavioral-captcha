@@ -2,7 +2,7 @@
 import { IconCheck, IconClose } from '../icons'
 
 import type { PropType } from 'vue'
-import type { ControlState } from './types'
+import type { ControlState } from '@/types'
 
 import { computed } from 'vue'
 

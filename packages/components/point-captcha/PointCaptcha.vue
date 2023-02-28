@@ -3,7 +3,7 @@ import CaptchaPanel from './CaptchaPanel.vue'
 import CaptchaControl from './CaptchaControl.vue'
 
 import type { PropType } from 'vue'
-import type { ControlState, PointCaptchaType, TextItem } from './types'
+import type { ControlState, PointCaptchaType, TextItem } from '@/types'
 
 import { onMounted, ref, computed, nextTick } from 'vue'
 import { createTextList } from './useCreateCaptcha'

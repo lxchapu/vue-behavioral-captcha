@@ -4,10 +4,11 @@ import BtnList from '../BtnList.vue'
 import Point from './Point.vue'
 
 import type { PropType } from 'vue'
-import type { TextItem } from './types'
+import type { TextItem } from '@/types'
 
 import { onMounted, reactive, ref, computed } from 'vue'
 import { loadImg } from '@/utils'
+import { drawText } from './canvas'
 
 const props = defineProps({
   width: { type: Number, required: true },
@@ -68,21 +69,6 @@ async function drawCaptcha() {
   } finally {
     state.loading = false
   }
-}
-/** 绘制文字 */
-function drawText(ctx: CanvasRenderingContext2D, text: TextItem) {
-  ctx.save()
-
-  const r = text.fontSize / 2
-  ctx.translate(text.x + r, text.y + r)
-  ctx.rotate((Math.PI / 180) * text.angle)
-  ctx.fillStyle = text.color
-  ctx.textAlign = 'start'
-  ctx.textBaseline = 'top'
-  ctx.font = `bold ${text.fontSize}px sans-serif`
-  ctx.fillText(text.text, -r, -r)
-
-  ctx.restore()
 }
 
 defineExpose({

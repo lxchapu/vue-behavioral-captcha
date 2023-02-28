@@ -3,10 +3,11 @@ import CaptchaControl from './CaptchaControl.vue'
 import LoadContainer from '../LoadContainer.vue'
 
 import type { PropType } from 'vue'
-import type { ControlState } from './types'
+import type { ControlState } from '@/types'
 
 import { ref, computed, onMounted } from 'vue'
 import { loadImg, random } from '@/utils'
+import { drawRoundedImg } from './canvas'
 
 const props = defineProps({
   width: { type: Number, default: 320 },
@@ -80,7 +81,6 @@ async function initPuzzle() {
   loading.value = true
 
   imgCtx!.clearRect(0, 0, width, width)
-  const r = width / 2
 
   maxError.value = false
   answer = random(10, 350)
@@ -88,19 +88,13 @@ async function initPuzzle() {
 
   try {
     const img = await loadImg(imgList[index])
-
-    const imgMin = Math.min(img.width, img.height)
-
-    imgCtx!.arc(r, r, r, 0, Math.PI * 2)
-    imgCtx!.clip()
-
-    imgCtx!.save()
-    imgCtx!.translate(r, r)
-    imgCtx!.rotate((Math.PI / 180) * answer)
-
-    imgCtx!.drawImage(img, 0, 0, imgMin, imgMin, -r, -r, width, width)
-
-    imgCtx!.restore()
+    drawRoundedImg(imgCtx!, {
+      x: 0,
+      y: 0,
+      r: width / 2,
+      rangle: answer,
+      img,
+    })
   } catch (error: any) {
     errorText.value = error
   } finally {

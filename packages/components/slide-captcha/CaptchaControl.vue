@@ -2,11 +2,11 @@
 import { IconArrowRight, IconClose, IconCheck } from '../icons'
 
 import type { PropType } from 'vue'
-import type { ControlState } from './types'
+import type { ControlState } from '@/types'
 
 import { ref, computed } from 'vue'
 import { clamp } from '@/utils'
-import { useEvent } from '@/composables/useEvent'
+import { useEvent } from '@/hooks'
 
 const props = defineProps({
   modelValue: { type: Number, required: true },

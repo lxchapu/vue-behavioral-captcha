@@ -3,11 +3,11 @@ import SlideCaptchaPanel from './SlideCaptchaPanel.vue'
 import CaptchaControl from './CaptchaControl.vue'
 
 import type { PropType } from 'vue'
-import type { ControlState } from './types'
+import type { BlockType, ControlState } from '@/types'
 
 import { ref, computed, onMounted, nextTick, toRef } from 'vue'
 import { random } from '@/utils'
-import { usePuzzleSize } from './usePuzzleSize'
+import { useBlockSize } from './useSlideCaptchRender'
 
 const props = defineProps({
   /** 画布宽度 */
@@ -15,7 +15,7 @@ const props = defineProps({
   height: { type: Number, default: 160 },
   borderRadius: { type: Number, default: 2 },
   blockSize: { type: Number, default: 40 },
-  blockType: { type: String as PropType<'jigsaw' | 'suqare'>, default: 'jigsaw' },
+  blockType: { type: String as PropType<BlockType>, default: 'jigsaw' },
   sliderSize: { type: Number, default: 40 },
   range: { type: Number, default: 4 },
   imgList: {
@@ -45,7 +45,7 @@ const maxError = ref(false)
 const captchaImg = ref('')
 const panelRef = ref()
 const safePadding = 4
-const blockPadding = 2
+const blockPadding = ref(2)
 const blockLeft = ref(0)
 
 const sliderMax = computed(() => props.width - blockRealWidth.value)
@@ -57,7 +57,7 @@ const sliderTipText = computed(() => {
   return props.tipText
 })
 
-const { blockBaseSize, blockRealWidth } = usePuzzleSize(
+const { blockBaseWidth, blockRealWidth } = useBlockSize(
   toRef(props, 'blockType'),
   toRef(props, 'blockSize'),
   blockPadding
@@ -79,11 +79,11 @@ function initCaptcha() {
   /** 生成坐标 */
   const randomX = random(
     blockRealWidth.value + safePadding,
-    props.width - safePadding - blockBaseSize.value
+    props.width - safePadding - blockBaseWidth.value
   )
-  const randomY = random(safePadding, props.height - safePadding - blockBaseSize.value)
+  const randomY = random(safePadding, props.height - safePadding - blockBaseWidth.value)
 
-  answer = randomX - blockPadding
+  answer = randomX - blockPadding.value
 
   nextTick(async () => {
     try {
@@ -168,10 +168,6 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.slide-captcha {
-  font-size: 14px;
-}
-
 .captcha-panel {
   margin-bottom: 15px;
 }
