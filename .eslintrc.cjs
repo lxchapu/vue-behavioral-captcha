@@ -1,6 +1,4 @@
-/* eslint-env node */
-require('@rushstack/eslint-patch/modern-module-resolution')
-
+/* eslint-disable */
 module.exports = {
   root: true,
   extends: [

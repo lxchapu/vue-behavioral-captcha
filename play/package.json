@@ -1,0 +1,18 @@
+{
+  "name": "play",
+  "private": true,
+  "scripts": {
+    "dev": "vite --port 8080",
+    "build": "vite build",
+    "preview": "vite preview --port 8080"
+  },
+  "dependencies": {
+    "normalize.css": "^8.0.1",
+    "vue": "^3.2.47"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.0",
+    "sass": "^1.58.3",
+    "vite": "^4.1.4"
+  }
+}

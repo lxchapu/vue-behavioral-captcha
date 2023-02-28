@@ -1,0 +1,44 @@
+{
+  "name": "vue-behavioral-captcha",
+  "version": "0.1.3",
+  "description": "基于 Vue 3 的行为式验证码",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lxchapu/vue-behavioral-captcha.git"
+  },
+  "keywords": [
+    "vue-behavioral-captcha",
+    "behavioral-captcha",
+    "puzzle",
+    "vue3"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/vue-behavioral-captcha.umd.cjs",
+  "module": "./dist/vue-behavioral-captcha.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-behavioral-captcha.js",
+      "require": "./dist/vue-behavioral-captcha.umd.cjs"
+    },
+    "./*": "./*"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "vue": "^3.2.47"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vue/test-utils": "^2.3.0",
+    "jsdom": "^21.1.0",
+    "sass": "^1.58.3",
+    "vite": "^4.1.4",
+    "vitest": "^0.29.1"
+  }
+}

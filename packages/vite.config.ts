@@ -2,27 +2,22 @@
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
 import { resolve } from 'node:path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), vueJsx()],
+  plugins: [vue()],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
+      '@': resolve(__dirname),
     },
   },
   test: {
-    root: 'src',
     environment: 'jsdom',
-  },
-  server: {
-    port: 8080,
   },
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/components/index.ts'),
+      entry: resolve(__dirname, 'components/index.ts'),
       name: 'VueBehavioralCaptcha',
       fileName: 'vue-behavioral-captcha',
     },
