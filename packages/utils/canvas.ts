@@ -1,11 +1,45 @@
-/*
- * @Author: 杨旭
- * @Date: 2023-02-28 16:46:38
- * @LastEditors: 杨旭
- * @LastEditTime: 2023-02-28 18:05:57
- * @FilePath: \vue-behavioral-captcha\packages\components\slide-captcha\canvas.ts
- * @Description: canvas 绘制函数
- */
+import type { PointTextItem } from '../types'
+
+/** 绘制文字 */
+export function drawText(ctx: CanvasRenderingContext2D, text: PointTextItem) {
+  ctx.save()
+
+  const r = text.fontSize / 2
+  ctx.translate(text.x + r, text.y + r)
+  ctx.rotate((Math.PI / 180) * text.angle)
+  ctx.fillStyle = text.color
+  ctx.textAlign = 'start'
+  ctx.textBaseline = 'top'
+  ctx.font = `bold ${text.fontSize}px sans-serif`
+  ctx.fillText(text.text, -r, -r)
+
+  ctx.restore()
+}
+
+/** 绘制圆形的图片 */
+export function drawRoundedImg(
+  ctx: CanvasRenderingContext2D,
+  options: {
+    x: number
+    y: number
+    r: number
+    rangle: number
+    img: HTMLImageElement
+  }
+) {
+  const { x, y, r, rangle, img } = options
+  const imgMin = Math.min(img.width, img.height)
+
+  ctx.arc(x + r, y + r, r, 0, Math.PI * 2)
+  ctx.clip()
+
+  ctx.save()
+  ctx.translate(x + r, y + r)
+  ctx.rotate((Math.PI / 180) * rangle)
+  ctx.drawImage(img, 0, 0, imgMin, imgMin, -r, -r, r * 2, r * 2)
+  ctx.restore()
+}
+
 /** 绘制拼图形状 */
 function drawJigsawPath(
   ctx: CanvasRenderingContext2D,
@@ -79,24 +113,9 @@ function drawBlockPath(
     radius: number
   }
 ) {
-  const { type, x, y, width, height, bulgeR, bulgeOffset, radius } = options
-  if (type === 'jigsaw')
-    drawJigsawPath(ctx, {
-      x,
-      y,
-      width,
-      height,
-      bulgeR,
-      bulgeOffset,
-    })
-  else
-    drawRoundRectPath(ctx, {
-      x,
-      y,
-      width,
-      height,
-      radius,
-    })
+  const { type } = options
+  if (type === 'jigsaw') drawJigsawPath(ctx, options)
+  else drawRoundRectPath(ctx, options)
 }
 
 /** 绘制缺少的拼图块 */
@@ -184,28 +203,5 @@ export function drawBlock(
   ctx.shadowBlur = 12
   ctx.fillStyle = '#ffffaa'
   ctx.fill()
-  ctx.restore()
-}
-/** 绘制圆形的图片 */
-export function drawRoundedImg(
-  ctx: CanvasRenderingContext2D,
-  options: {
-    x: number
-    y: number
-    r: number
-    rangle: number
-    img: HTMLImageElement
-  }
-) {
-  const { x, y, r, rangle, img } = options
-  const imgMin = Math.min(img.width, img.height)
-
-  ctx.arc(x + r, y + r, r, 0, Math.PI * 2)
-  ctx.clip()
-
-  ctx.save()
-  ctx.translate(x + r, y + r)
-  ctx.rotate((Math.PI / 180) * rangle)
-  ctx.drawImage(img, 0, 0, imgMin, imgMin, -r, -r, r * 2, r * 2)
   ctx.restore()
 }

@@ -1,3 +1,11 @@
+<!--
+ * @Author: 杨旭
+ * @Date: 2023-02-24 11:28:26
+ * @LastEditors: 杨旭
+ * @LastEditTime: 2023-02-24 17:43:27
+ * @FilePath: \zyx-components\packages\components\captcha\components\point-captcha\Point.vue
+ * @Description: 标记点
+-->
 <script lang="ts" setup>
 defineProps({
   value: {

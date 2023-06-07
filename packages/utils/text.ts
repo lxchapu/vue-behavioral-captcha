@@ -1,4 +1,4 @@
-import { random } from './number'
+import { random } from './math'
 import { shuffle, range } from './array'
 
 /** 100 个成语 */

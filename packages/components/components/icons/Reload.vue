@@ -1,6 +1,14 @@
+<!--
+ * @Author: 杨旭
+ * @Date: 2023-02-24 11:28:26
+ * @LastEditors: 杨旭
+ * @LastEditTime: 2023-03-01 14:17:08
+ * @FilePath: \zyx-components\packages\components\captcha\src\components\icons\Reload.vue
+ * @Description: 图标 刷新
+-->
 <template>
   <svg
-    class="icon-reload"
+    class="z-icon-reload"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 10 10"
     width="1em"

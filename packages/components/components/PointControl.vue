@@ -1,8 +1,16 @@
+<!--
+ * @Author: 杨旭
+ * @Date: 2023-02-24 11:28:26
+ * @LastEditors: 杨旭
+ * @LastEditTime: 2023-03-06 17:13:50
+ * @FilePath: \zyx-components\packages\components\captcha\src\components\PointControl.vue
+ * @Description: 验证码控制器
+-->
 <script lang="ts" setup>
-import { IconCheck, IconClose } from '../icons'
+import { IconCheck, IconClose } from './icons'
 
 import type { PropType } from 'vue'
-import type { ControlState } from '@/types'
+import type { CaptchaControlState } from '../../types'
 
 import { computed } from 'vue'
 
@@ -12,7 +20,7 @@ const props = defineProps({
   borderRadius: { type: Number, required: true },
   tipText: { type: String, required: true },
   answer: { type: Array as PropType<string[]>, required: true },
-  state: { type: String as PropType<ControlState>, required: true },
+  state: { type: String as PropType<CaptchaControlState>, required: true },
   clickabled: { type: Boolean, required: true },
 })
 const emits = defineEmits(['refresh'])
@@ -36,15 +44,15 @@ function handleClickTip() {
 
 <template>
   <div
-    class="captcha-control"
-    :class="`captcha-control--${state}`"
+    class="point-control"
+    :class="`point-control--${state}`"
     :style="{
       height: `${height}px`,
       borderRadius: `${borderRadius}px`,
     }"
   >
     <div class="tip" :class="{ 'tip--clickabled': clickabled }" @click="handleClickTip">
-      <component v-if="tipIcon" class="tip__icon" :is="tipIcon" />
+      <component :is="tipIcon" v-if="tipIcon" class="tip__icon" />
       <div class="tip__text">
         {{ tipText }}
         <span v-if="answer.length" class="tip__anawer-text">{{ answerText }}</span>
@@ -54,20 +62,20 @@ function handleClickTip() {
 </template>
 
 <style lang="scss" scoped>
-.captcha-control {
+.point-control {
   box-sizing: border-box;
   color: #45494c;
   background-color: #f7f9fa;
   border: 1px solid #e4e7eb;
 }
 
-.captcha-control--error {
+.point-control--error {
   color: #f57a7a;
   background-color: #fce1e1;
   border-color: #f57a7a;
 }
 
-.captcha-control--success {
+.point-control--success {
   color: #52ccba;
   background-color: #d2f4ef;
   border-color: #52ccba;

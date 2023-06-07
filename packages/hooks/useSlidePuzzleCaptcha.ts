@@ -1,19 +1,19 @@
-import type { BlockType } from '@/types'
-import type { Ref } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { drawBlock, drawMissingBlock, randomImg, loadImg, random } from '../utils'
 
-import { computed, onMounted, ref } from 'vue'
-import { drawBlock, drawMissingBlock } from './canvas'
+import type { PuzzleBlockType } from '../types'
+import type { Ref } from 'vue'
 
 /** 计算拼图块大小 */
 export function useBlockSize(
-  blockType: Ref<BlockType>,
+  blockType: Ref<PuzzleBlockType>,
   blockSize: Ref<number>,
-  blockPadding: Ref<number>
+  blockPadding: number
 ) {
   /** 凸起半径 */
   const bulgeR = computed(() => blockSize.value / 5)
 
-  /** 凸起圆形偏移 */
+  /** 凸起圆心偏移 */
   const bulgeOffset = computed(() => bulgeR.value * Math.cos(0.7))
 
   /** 拼图块大小 包含凸起 */
@@ -26,7 +26,7 @@ export function useBlockSize(
   })
 
   /** 拼图块大小 包含左右边距 */
-  const blockRealWidth = computed(() => blockBaseWidth.value + blockPadding.value * 2)
+  const blockRealWidth = computed(() => blockBaseWidth.value + blockPadding * 2)
 
   return {
     bulgeR,
@@ -35,16 +35,32 @@ export function useBlockSize(
     blockRealWidth,
   }
 }
-
-/** 滑动拼图验证码渲染函数 */
-export function useSlideCaptchaRender(
+/** 生成滑动拼图验证码 */
+export function useSlidePuzzleCaptcha(
   width: Ref<number>,
   height: Ref<number>,
-  blockType: Ref<BlockType>,
+  blockType: Ref<PuzzleBlockType>,
   blockSize: Ref<number>,
-  blockPadding: Ref<number>,
-  blockRadius: Ref<number>
+  blockRadius: Ref<number>,
+  imgList: Ref<string[]>
 ) {
+  /** 安全边距 */
+  const safePadding = 4
+  /** 拼图块左右边距 */
+  const blockPadding = 2
+
+  const { bulgeR, bulgeOffset, blockBaseWidth, blockRealWidth } = useBlockSize(
+    blockType,
+    blockSize,
+    blockPadding
+  )
+
+  /** 状态 */
+  const state = reactive({
+    loadingError: '',
+    loading: false,
+  })
+
   const fullCanvasRef = ref<HTMLCanvasElement>()
   const bgCanvasRef = ref<HTMLCanvasElement>()
   const blockCanvasRef = ref<HTMLCanvasElement>()
@@ -52,13 +68,45 @@ export function useSlideCaptchaRender(
     bgCtx: CanvasRenderingContext2D | null = null,
     blockCtx: CanvasRenderingContext2D | null = null
 
-  const { bulgeR, bulgeOffset, blockRealWidth } = useBlockSize(blockType, blockSize, blockPadding)
-  /** 渲染验证码 */
-  function render(img: HTMLImageElement, x: number, y: number) {
-    renderFullCanvas(fullCtx!, img)
-    renderBgCanvas(bgCtx!, img, x, y)
-    renderBlockCanvas(blockCtx!, img, x, y)
+  /** 滑动距离 */
+  const blockLeft = ref(0)
+
+  let answer = 0
+
+  /** 初始化验证码 */
+  async function initCaptcha() {
+    /* 重置状态 */
+    state.loading = true
+    state.loadingError = ''
+    blockLeft.value = 0
+
+    /** 生成坐标 */
+    const randomX = random(
+      blockRealWidth.value + safePadding,
+      width.value - safePadding - blockBaseWidth.value
+    )
+    const randomY = random(safePadding, height.value - safePadding - blockBaseWidth.value)
+
+    answer = randomX - blockPadding
+    /** 生成随机图片 */
+    const bgImg = randomImg(imgList.value)
+    /** 清空画布 */
+    clearCanvas()
+    try {
+      /* 加载图片 */
+      const img = await loadImg(bgImg)
+      /* 渲染验证码 */
+      renderFullCanvas(fullCtx!, img)
+      renderBgCanvas(bgCtx!, img, randomX, randomY)
+      renderBlockCanvas(blockCtx!, img, randomX, randomY)
+    } catch (error: any) {
+      state.loadingError = error
+      throw error
+    } finally {
+      state.loading = false
+    }
   }
+
   /** 清空画布 */
   function clearCanvas() {
     fullCtx!.clearRect(0, 0, width.value, height.value)
@@ -113,8 +161,13 @@ export function useSlideCaptchaRender(
       img,
       canvasHeight: height.value,
       canvasWidth: blockRealWidth.value,
-      safePadding: blockPadding.value,
+      safePadding: blockPadding,
     })
+  }
+
+  /** 检查验证码是否通过 */
+  function validateCaptcha(range: number) {
+    return Math.abs(answer - blockLeft.value) < range
   }
 
   onMounted(() => {
@@ -127,8 +180,10 @@ export function useSlideCaptchaRender(
     fullCanvasRef,
     bgCanvasRef,
     blockCanvasRef,
+    blockLeft,
+    state,
     blockRealWidth,
-    render,
-    clearCanvas,
+    initCaptcha,
+    validateCaptcha,
   }
 }

@@ -1,6 +1,14 @@
+<!--
+ * @Author: 杨旭
+ * @Date: 2023-02-24 11:28:26
+ * @LastEditors: 杨旭
+ * @LastEditTime: 2023-02-24 17:19:02
+ * @FilePath: \zyx-components\packages\components\captcha\src\icons\ImageError.vue
+ * @Description: 图标 图片错误
+-->
 <template>
   <svg
-    class="icon-image-error"
+    class="z-icon-image-error"
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
     height="1em"

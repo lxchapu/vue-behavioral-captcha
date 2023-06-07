@@ -1,5 +1,6 @@
 export * from './array'
 export * from './image'
-export * from './number'
+export * from './math'
 export * from './text'
 export * from './color'
+export * from './canvas'

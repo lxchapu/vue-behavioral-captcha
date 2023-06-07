@@ -1,6 +1,14 @@
+<!--
+ * @Author: 杨旭
+ * @Date: 2023-02-24 11:28:26
+ * @LastEditors: 杨旭
+ * @LastEditTime: 2023-02-24 17:06:14
+ * @FilePath: \zyx-components\packages\components\captcha\components\icons\Close.vue
+ * @Description: 图标 关闭
+-->
 <template>
   <svg
-    class="icon-close"
+    class="z-icon-close"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 12 12"
     width="1em"

@@ -1,6 +1,14 @@
+<!--
+ * @Author: 杨旭
+ * @Date: 2023-02-24 11:28:26
+ * @LastEditors: 杨旭
+ * @LastEditTime: 2023-03-01 14:16:28
+ * @FilePath: \zyx-components\packages\components\captcha\src\components\icons\ArrowRight.vue
+ * @Description: 图标 向右箭头
+-->
 <template>
   <svg
-    class="icon-arrow-right"
+    class="z-icon-arrow-right"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 15.6 11.1"
     width="1em"

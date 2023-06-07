@@ -1,12 +1,20 @@
+<!--
+ * @Author: 杨旭
+ * @Date: 2023-02-24 11:28:26
+ * @LastEditors: 杨旭
+ * @LastEditTime: 2023-06-07 09:30:35
+ * @FilePath: \vue-behavioral-captcha\packages\components\components\SlideControl.vue
+ * @Description: 滑动控制器
+-->
 <script lang="ts" setup>
-import { IconArrowRight, IconClose, IconCheck } from '../icons'
+import { IconArrowRight, IconClose, IconCheck } from './icons'
 
 import type { PropType } from 'vue'
-import type { ControlState } from '@/types'
+import type { CaptchaControlState } from '../../types'
 
 import { ref, computed } from 'vue'
-import { clamp } from '@/utils'
-import { useEvent } from '@/hooks'
+import { clamp, getStandardVariance } from '../../utils'
+import { useEvent } from '../../hooks'
 
 const props = defineProps({
   modelValue: { type: Number, required: true },
@@ -16,7 +24,7 @@ const props = defineProps({
   height: { type: Number, required: true },
   borderRadius: { type: Number, required: true },
   tipText: { type: String, required: true },
-  state: { type: String as PropType<ControlState>, default: 'ready' },
+  state: { type: String as PropType<CaptchaControlState>, default: 'ready' },
   maxError: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
 })
@@ -31,10 +39,12 @@ const dragging = ref(false)
 /* 记录开始信息 */
 const start = {
   /* 鼠标点击的开始位置 */
-  clientX: 0,
+  pageX: 0,
   /* 起始值 */
   value: 0,
 }
+/** 记录滑动的 y 坐标 */
+let yLogs: number[] = []
 
 const sliderBarWidth = computed(() => {
   const { modelValue, min, max, height, width } = props
@@ -55,7 +65,7 @@ const sliderIcon = computed(() => {
 const sliderTipText = computed(() => {
   return dragging.value || props.state === 'success' ? '' : props.tipText
 })
-
+/** 获取点击位置 pageX */
 function getPageX(event: MouseEvent | TouchEvent) {
   if ('pageX' in event) {
     return event.pageX
@@ -63,31 +73,43 @@ function getPageX(event: MouseEvent | TouchEvent) {
     return event.changedTouches[0].pageX
   }
 }
+/** 获取点击位置 pageY */
+function getPageY(event: MouseEvent | TouchEvent) {
+  if ('pageY' in event) {
+    return event.pageY
+  } else {
+    return event.changedTouches[0].pageY
+  }
+}
 
 /** 开始拖动 */
 function handleStartDrag(event: MouseEvent | TouchEvent) {
   if (disabled.value) return
 
-  const clientX = getPageX(event)
   dragging.value = true
-  start.clientX = clientX
+  start.pageX = getPageX(event)
   start.value = props.modelValue
+  yLogs = []
 }
 /** 拖动 */
 function handleDrag(event: MouseEvent | TouchEvent) {
   if (!dragging.value || disabled.value) return
 
-  const clientX = getPageX(event)
   const { min, max, height, width } = props
-  const v = ((clientX - start.clientX) / (width - height)) * (max - min)
+  const pageX = getPageX(event)
+  const pageY = getPageY(event)
+  yLogs.push(pageY)
+  const v = ((pageX - start.pageX) / (width - height)) * (max - min)
   const value = clamp(v + start.value, min, max)
   emits('update:modelValue', value)
 }
 /** 结束拖动 */
 function handleStopDrag() {
   if (!dragging.value || disabled.value) return
+
   dragging.value = false
-  emits('finish')
+  const standardVariance = getStandardVariance(yLogs)
+  emits('finish', standardVariance)
 }
 
 /** 点击重试 */
@@ -106,8 +128,8 @@ useEvent('blur', handleStopDrag)
 
 <template>
   <div
-    class="captcha-control"
-    :class="{ 'captcha-control--error': maxError }"
+    class="slide-control"
+    :class="{ 'slide-control--error': maxError }"
     :style="{
       height: `${height}px`,
       borderRadius: `${borderRadius}px`,
@@ -156,7 +178,7 @@ useEvent('blur', handleStopDrag)
 </template>
 
 <style lang="scss" scoped>
-.captcha-control {
+.slide-control {
   position: relative;
   box-sizing: border-box;
   color: #45494c;
@@ -164,7 +186,7 @@ useEvent('blur', handleStopDrag)
   border: 1px solid #e4e7eb;
 }
 
-.captcha-control--error {
+.slide-control--error {
   color: #f57a7a;
   cursor: pointer;
   background-color: #fce1e1;

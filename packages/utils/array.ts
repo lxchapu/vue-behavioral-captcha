@@ -1,4 +1,4 @@
-import { random } from './number'
+import { random } from './math'
 
 /** 对数组随机排序 */
 export function shuffle(list: number[], len?: number) {

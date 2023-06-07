@@ -1,9 +1,17 @@
+<!--
+ * @Author: 杨旭
+ * @Date: 2023-02-24 11:28:26
+ * @LastEditors: 杨旭
+ * @LastEditTime: 2023-02-24 17:06:56
+ * @FilePath: \zyx-components\packages\components\captcha\components\icons\Loading.vue
+ * @Description: 图标 加载
+-->
 <template>
-  <div class="icon-loading"></div>
+  <div class="z-icon-loading"></div>
 </template>
 
 <style lang="scss" scoped>
-.icon-loading {
+.z-icon-loading {
   width: 1em;
   height: 1em;
   border: 2px solid gray;
