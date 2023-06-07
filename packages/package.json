@@ -1,6 +1,6 @@
 {
   "name": "vue-behavioral-captcha",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "基于 Vue 3 的行为式验证码",
   "repository": {
     "type": "git",
